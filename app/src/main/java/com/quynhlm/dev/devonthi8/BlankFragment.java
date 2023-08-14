@@ -28,6 +28,14 @@ public class BlankFragment extends Fragment {
     ArrayList<Student> list = new ArrayList<>();
     Student_Adapter student_adapter;
 
+    public boolean isChuoi(String str) {
+        return str.matches("[a-z A-Z 0-9]+");
+    }
+
+    public boolean isNguyen(String str) {
+        return str.matches("\\d+");
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,24 +57,30 @@ public class BlankFragment extends Fragment {
             edt_mssv = view1.findViewById(R.id.edt_mssv);
             view1.findViewById(R.id.btn_add).setOnClickListener(v1 -> {
                 String name = edt_name.getText().toString();
-                String birth = edt_name.getText().toString();
-                String mssv = edt_name.getText().toString();
-
-                Student student = new Student();
-                student.setName(name);
-                student.setBirthday(Integer.parseInt(birth));
-                student.setMSSV(Integer.parseInt(mssv));
-
-                if (studentDao.insertData(student)) {
-                    Toast.makeText(getContext(), "Them thanh cong", Toast.LENGTH_SHORT).show();
-                    list.add(student);
-                    student_adapter.notifyDataSetChanged();
-                    alertDialog.dismiss();
+                String birth = edt_birth.getText().toString();
+                String mssv = edt_mssv.getText().toString();
+                if (name.isEmpty() || birth.isEmpty() || mssv.isEmpty()) {
+                    Toast.makeText(getContext(), "Không được bỏ trống", Toast.LENGTH_SHORT).show();
+                } else if (!isChuoi(name)) {
+                    Toast.makeText(getContext(), "Nhập sai định dạng tên", Toast.LENGTH_SHORT).show();
+                } else if (!isNguyen(birth) || !isNguyen(mssv)) {
+                    Toast.makeText(getContext(), "Nhập sai định dạng số nguyên ", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getContext(), "Them that bai", Toast.LENGTH_SHORT).show();
+                    Student student = new Student();
+                    student.setName(name);
+                    student.setBirthday(Integer.parseInt(birth));
+                    student.setMSSV(Integer.parseInt(mssv));
+
+                    if (studentDao.insertData(student)) {
+                        Toast.makeText(getContext(), "Them thanh cong", Toast.LENGTH_SHORT).show();
+                        list.add(student);
+                        student_adapter.notifyDataSetChanged();
+                        alertDialog.dismiss();
+                    } else {
+                        Toast.makeText(getContext(), "Them that bai", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
-
             alertDialog.show();
         });
         return view;
